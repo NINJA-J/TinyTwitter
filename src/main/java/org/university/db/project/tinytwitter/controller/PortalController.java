@@ -2,17 +2,28 @@ package org.university.db.project.tinytwitter.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.ModelAndView;
 import org.university.db.project.tinytwitter.controller.base.AbstractMenuController;
 import org.university.db.project.tinytwitter.entity.User;
 import org.university.db.project.tinytwitter.service.TwitterContext;
 import org.university.db.project.tinytwitter.service.UserService;
 
+import javax.servlet.http.HttpSession;
+
 @Controller
+@RequestMapping("/")
 public class PortalController extends AbstractMenuController {
 
     private final BlogController blogController;
 
     private final UserService userService;
+
+    @RequestMapping("/login")
+    public ModelAndView index(HttpSession session) {
+        return new ModelAndView("index.html");
+    }
 
     @Autowired
     protected PortalController(BlogController blogController, UserService userService) {
