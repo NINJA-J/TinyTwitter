@@ -2,6 +2,7 @@
 
 Bonus! Bonus! Bonus!
 
+
 ## Architecture
 
 - Spring boot framework with command line entrypoint and datasource auto-configuration
@@ -10,15 +11,15 @@ Bonus! Bonus! Bonus!
 
 ## Feature
 - Auto menu set up
-  - if you haven't login, you cann't access 'my blogs', 'my collections' and 'make comment'
-  - if you have made comment, you can only 'update comment' or 'delete comment', otherwise you can only 'add comment'
+  - if you haven't logged in, you can't access 'my blogs', 'my collections' and 'make comment' option
+  - if you have written comment/blog, you can only 'update comment/blog' or 'delete comment/blog', otherwise you can only 'add comment/blog'
 - Statistics
-  - User information statistics about how many blog and comment have been written
-  - Blog information statistics about how many people liked or collect each blogs
+  - User information statistics about how many blogs and comments have been written by user
+  - Blog information statistics about how many people liked or collected each blog
 - Complex blog search function
-  - Accepts fuzzy search on author name, blog title and blog content
-  - Accepts conditions like whether blogs are liked or collected by user
-  - User can choose to select each search condition
+  - Allow fuzzy search on author name, blog title and blog content
+  - Allow conditions like whether blogs are liked or collected by user
+  - User can combine different search condition
 
 ## How to run
 
