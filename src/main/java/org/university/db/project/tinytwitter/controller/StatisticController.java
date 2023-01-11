@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.university.db.project.tinytwitter.controller.base.AbstractMenuController;
 import org.university.db.project.tinytwitter.dao.StatisticMapper;
 import org.university.db.project.tinytwitter.entity.BlogStatistics;
 import org.university.db.project.tinytwitter.entity.UserStatistic;
@@ -14,7 +13,7 @@ import java.util.List;
 
 @Controller
 @RequestMapping("/statistics")
-public class StatisticController extends AbstractMenuController {
+public class StatisticController {
 
     @Autowired
     private StatisticMapper statisticMapper;

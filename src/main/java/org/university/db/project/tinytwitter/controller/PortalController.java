@@ -6,13 +6,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.university.db.project.tinytwitter.controller.base.AbstractMenuController;
 import org.university.db.project.tinytwitter.entity.User;
 import org.university.db.project.tinytwitter.service.UserService;
 
 @Controller
 @RequestMapping("/auth")
-public class PortalController extends AbstractMenuController {
+public class PortalController {
 
     private final UserService userService;
 
