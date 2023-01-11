@@ -1,46 +1,60 @@
 package org.university.db.project.tinytwitter.controller;
 
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.university.db.project.tinytwitter.controller.base.AbstractMenuController;
 import org.university.db.project.tinytwitter.dao.StatisticMapper;
 import org.university.db.project.tinytwitter.entity.BlogStatistics;
 import org.university.db.project.tinytwitter.entity.UserStatistic;
-import org.university.db.project.tinytwitter.service.TwitterContext;
 
-import java.text.SimpleDateFormat;
 import java.util.List;
 
 @Controller
+@RequestMapping("/statistics")
 public class StatisticController extends AbstractMenuController {
 
     @Autowired
     private StatisticMapper statisticMapper;
 
-    @Override
-    protected void registerMenu(TwitterContext context) {
-        register("User Statistic", this::showUserStatistics);
-        register("Blog Statistic", this::showBlogStatistics);
+    @RequestMapping("/user")
+    public UserStatisticsResponse showUserStatistics() {
+        UserStatisticsResponse response = new UserStatisticsResponse();
+        try {
+            response.setResult(statisticMapper.getUserStatistics());
+            response.setStatus(ResponseStatus.SUCCESS.code);
+        } catch (Exception e) {
+            response.setStatus(ResponseStatus.ERROR.code);
+        }
+        return response;
     }
 
-    private ControllerResult showUserStatistics(TwitterContext context) {
-        List<UserStatistic> statistics = statisticMapper.getUserStatistics();
-        System.out.println("|    User    | Blogs | Avg. Blog Len | Comments | Avg. Comment Len |");
-        for (UserStatistic s: statistics) {
-            System.out.printf( "| %10s |  %4d |    %7.2f    |   %4d   |      %7.2f     |\n", s.getName(), s.getBlogs(),
-                    s.getAvgBlogLen(), s.getComments(), s.getAvgCommentLen());
+    @RequestMapping("/blog")
+    public @ResponseBody
+    BlogStatisticsResponse showBlogStatistics() {
+        BlogStatisticsResponse response = new BlogStatisticsResponse();
+        try {
+            response.setResult(statisticMapper.getBlogStatistics());
+            response.setStatus(ResponseStatus.SUCCESS.code);
+        } catch (Exception e) {
+            response.setStatus(ResponseStatus.ERROR.code);
         }
-        return ControllerResult.NORMAL;
+        return response;
     }
 
-    private ControllerResult showBlogStatistics(TwitterContext context) {
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-        List<BlogStatistics> statistics = statisticMapper.getBlogStatistics();
-        System.out.println("|         Title        |   author   | Last Update | Likes | Collects | Comments |");
-        for (BlogStatistics s: statistics) {
-            System.out.printf( "| %20s | %10s |  %s |  %4d |   %4d   |   %4d   |\n", s.getTitle(), s.getAuthor(),
-                    format.format(s.getLastUpdateDate()), s.getLikes(), s.getCollects(), s.getComments());
-        }
-        return ControllerResult.NORMAL;
+    @Data
+    public static class UserStatisticsResponse {
+        private int status;
+
+        private List<UserStatistic> result;
+    }
+
+    @Data
+    public static class BlogStatisticsResponse {
+        private int status;
+
+        private List<BlogStatistics> result;
     }
 }

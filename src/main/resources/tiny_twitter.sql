@@ -267,8 +267,9 @@ begin
     ), comment_cnt as (
         select blog_id, count(comment_id) cmts from comment group by blog_id
     )
-    select title, user.name author, update_date, ifnull(like_stat.likes, 0) likes,
-           ifnull(collect_stat.collects, 0) collects, ifnull(cmts, 0) comments  from blog
+    select title, user.name author, DATE_FORMAT(update_date,'%Y-%m-%d') update_date,
+           ifnull(like_stat.likes, 0) likes, ifnull(collect_stat.collects, 0) collects,
+           ifnull(cmts, 0) comments  from blog
         left join user on blog.author = user.user_id
         left join like_stat on blog.blog_id = like_stat.blog_id
         left join collect_stat on blog.blog_id = collect_stat.blog_id

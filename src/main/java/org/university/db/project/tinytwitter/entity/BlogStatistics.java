@@ -10,7 +10,7 @@ public class BlogStatistics {
 
     private String author;
 
-    private Date lastUpdateDate;
+    private String lastUpdateDate;
 
     private int likes;
 
