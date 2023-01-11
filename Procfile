@@ -1,1 +1,1 @@
-web: java -Dserver.port=$PORT $JAVA_OPTS --password=$DB_PASSWORD -jar target/TinyTwitter-0.0.1-SNAPSHOT.jar
+web: java -Dserver.port=$PORT $JAVA_OPTS -Dpassword=$DB_PASSWORD -jar target/TinyTwitter-0.0.1-SNAPSHOT.jar
