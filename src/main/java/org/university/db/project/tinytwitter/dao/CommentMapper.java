@@ -16,8 +16,8 @@ public interface CommentMapper {
             Integer.class)
     int insert(Comment record);
 
-    @Update("update comment set update_date = #{updateDate}, blog_id = #{blogId}, create_date = #{createDate}," +
-            "author = #{author.userId}, content = #{content} " +
+    @Update("update comment " +
+            "set update_date = #{updateDate}, content = #{content} " +
             "where comment_id = #{commentId}")
     int updateByPrimaryKey(Comment record);
 
@@ -47,4 +47,20 @@ public interface CommentMapper {
             @Result(property = "author", one = @One(columnPrefix = "user_", resultMap = "userMapOnlyName"))
     })
     List<Comment> getCommentAndUserByBlogId(int blogId);
+
+    @Select("select comment_id, update_date, blog_id, create_date, author, content, " +
+            "user_id user_user_id, name user_name from comment " +
+            "left join user on comment.author = user.user_id " +
+            "<where>" +
+            "    <if test='user != null'>" +
+            "        user_name like #{user}" +
+            "    </if>" +
+            "    <if test='content != null'>" +
+            "        content like #{content}" +
+            "    </if>" +
+            "</where>" +
+            "<if test='page != null'>" +
+            "    offset #{offset} limit #{limit}" +
+            "</if>")
+    List<Comment> getCommentByFilter(int blogId, String user, String content, Integer offset, Integer limit);
 }

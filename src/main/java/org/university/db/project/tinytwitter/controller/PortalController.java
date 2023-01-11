@@ -1,102 +1,74 @@
 package org.university.db.project.tinytwitter.controller;
 
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.university.db.project.tinytwitter.controller.base.AbstractMenuController;
 import org.university.db.project.tinytwitter.entity.User;
-import org.university.db.project.tinytwitter.service.TwitterContext;
 import org.university.db.project.tinytwitter.service.UserService;
 
-import javax.servlet.http.HttpSession;
-
 @Controller
-@RequestMapping("/")
+@RequestMapping("/auth")
 public class PortalController extends AbstractMenuController {
-
-    private final BlogController blogController;
 
     private final UserService userService;
 
-    @RequestMapping("/login")
-    public ModelAndView index(HttpSession session) {
-        return new ModelAndView("index.html");
-    }
-
     @Autowired
-    protected PortalController(BlogController blogController, UserService userService) {
-        super();
-        this.blogController = blogController;
+    protected PortalController(UserService userService) {
         this.userService = userService;
     }
 
-    @Override
-    protected void registerMenu(TwitterContext context) {
-        if (context.getUser() == null) {
-            register("Login", this::login);
-            register("Register", this::register);
+    @RequestMapping("/login")
+    public @ResponseBody
+    LoginResponse login(@RequestBody LoginRequest request) {
+        LoginResponse response = new LoginResponse();
+        try {
+            User user = userService.login(request.getUsername(), request.getPassword());
+            if (user == null) {
+                response.setStatus(ResponseStatus.ERROR.code);
+                response.setMessage("Invalid username or Password");
+            } else {
+                response.setStatus(ResponseStatus.SUCCESS.code);
+                response.setUser(user);
+            }
+        } catch (Exception e) {
+            response.setStatus(ResponseStatus.ERROR.code);
+            response.setMessage("Internal Server Error, try again");
         }
-        register("Explore Blogs", this::browseBlogs);
-        if (context.getUser() != null) {
-            register("My Blogs", this::browseMyBlogs);
-            register("My Collections", this::browseMyCollections);
+        return response;
+    }
+
+    @RequestMapping("/register")
+    public @ResponseBody
+    LoginResponse register(@RequestBody User user) {
+        LoginResponse response = new LoginResponse();
+        try {
+            userService.add(user);
+            response.setStatus(ResponseStatus.SUCCESS.code);
+            response.setUser(user);
+        } catch (Exception e) {
+            response.setStatus(ResponseStatus.ERROR.code);
+            response.setMessage("Internal Server Error, try again");
         }
+        return response;
     }
 
-    private ControllerResult login(TwitterContext context) {
-        System.out.print("Username: ");
-        String username = context.getIn().next();
-        System.out.print("Password: ");
-        String password = context.getIn().next();
+    @Data
+    private static class LoginRequest {
+        private String username;
 
-        User user = userService.login(username, password);
-        if (user == null) {
-            System.out.println("Invalid Username or Password");
-        } else {
-            context.setUser(user);
-        }
-
-        return ControllerResult.NORMAL;
+        private String password;
     }
 
-    private ControllerResult register(TwitterContext context) {
-        User user = new User();
-        System.out.print("Username: ");
-        String username = context.getIn().next();
-        if (userService.exist(username)) {
-            System.out.println("Username \"" + username + "\" already exist");
-            return ControllerResult.NORMAL;
-        }
+    @Data
+    private static class LoginResponse {
+        private int status;
 
-        user.setName(username);
-        System.out.print("Password: ");
-        user.setPassword(context.getIn().next());
+        private String message;
 
-        System.out.print("Email   : ");
-        user.setEmail(context.getIn().next());
-
-        userService.add(user);
-        context.setUser(user);
-        return ControllerResult.NORMAL;
-    }
-
-    private ControllerResult browseBlogs(TwitterContext context) {
-        context.getBlogSearchContext().clear();
-        return blogController.run(context);
-    }
-
-    private ControllerResult browseMyBlogs(TwitterContext context) {
-        context.getBlogSearchContext().clear();
-        context.getBlogSearchContext().setUser(context.getUser().getName());
-        return blogController.run(context);
-    }
-
-    private ControllerResult browseMyCollections(TwitterContext context) {
-        context.getBlogSearchContext().clear();
-//        context.getBlogSearchContext().setUser(context.getUser().getName());
-        context.getBlogSearchContext().setIsCollect(true);
-        return blogController.run(context);
+        private User user;
     }
 }
