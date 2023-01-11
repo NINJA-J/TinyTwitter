@@ -15,7 +15,7 @@
     <description>TinyTwitter</description>
     <properties>
         <java.version>1.8</java.version>
-<!--        <start-class>org.university.db.project.tinytwitter.controller.ShellEntrypoint</start-class>-->
+        <start-class>org.university.db.project.tinytwitter.TinyTwitterApplication</start-class>
     </properties>
     <dependencies>
         <dependency>
