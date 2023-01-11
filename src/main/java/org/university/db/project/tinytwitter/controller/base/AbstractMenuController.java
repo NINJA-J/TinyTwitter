@@ -1,8 +1,7 @@
 package org.university.db.project.tinytwitter.controller.base;
 
-import org.university.db.project.tinytwitter.controller.ControllerResult;
+import org.university.db.project.tinytwitter.controller.ResponseStatus;
 import org.university.db.project.tinytwitter.controller.PortalController;
-import org.university.db.project.tinytwitter.service.TwitterContext;
 
 import java.util.*;
 
@@ -21,9 +20,9 @@ public abstract class AbstractMenuController extends AbstractShellController {
     private List<String> controllerNames;
 
     @Override
-    final public ControllerResult run(TwitterContext context) {
-        ControllerResult result = ControllerResult.NORMAL;
-        while (result == ControllerResult.NORMAL) {
+    final public ResponseStatus run(TwitterContext context) {
+        ResponseStatus result = ResponseStatus.NORMAL;
+        while (result == ResponseStatus.NORMAL) {
             if (controllerNames == null) {
                 controllerNames = new ArrayList<>();
                 controllerMap = new HashMap<>();
@@ -31,37 +30,33 @@ public abstract class AbstractMenuController extends AbstractShellController {
                 controllerNames.clear();
             }
 
-            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-            try {
-                result = process(context);
-            } catch (WrongInputException e) {
-                System.out.println("Invalid input: " + e.getMessage());
-                continue;
-            }
 
-            if (result != ControllerResult.NORMAL) {
+            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+            result = process(context);
+            if (result != ResponseStatus.NORMAL) {
                 return result;
             }
 
             registerMenu(context);
+
             int selection = menu(context);
             switch (selection) {
                 case INVALID:
                     System.out.print("Invalid option, please select again");
                     continue;
                 case LOGOUT:
-                    return ControllerResult.LOGOUT;
+                    return ResponseStatus.LOGOUT;
                 case RETURN:
-                    return ControllerResult.NORMAL;
+                    return ResponseStatus.NORMAL;
                 case EXIT:
-                    return ControllerResult.EXIT;
+                    return ResponseStatus.EXIT;
                 default:
                     IShellController controller = controllerMap.get(controllerNames.get(selection - 1));
                     if (controller != this) {
                         try {
                             result = controller.run(context);
-                        } catch (InputMismatchException | WrongInputException e) {
-                            System.out.println("Invalid input, " + e.getMessage());
+                        } catch (InputMismatchException e) {
+                            System.out.println("");
                         }
 
                     }
@@ -78,8 +73,8 @@ public abstract class AbstractMenuController extends AbstractShellController {
     protected void onReturn(TwitterContext context) {
     }
 
-    protected ControllerResult process(TwitterContext context) {
-        return ControllerResult.NORMAL;
+    protected ResponseStatus process(TwitterContext context) {
+        return ResponseStatus.NORMAL;
     }
 
     final protected void register(String name, IShellController controller) {

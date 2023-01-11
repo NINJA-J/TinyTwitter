@@ -8,7 +8,7 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import javax.annotation.Resource;
 
 @Service
-public class UserService implements IService<User> {
+public class UserService {
 
     @Resource
     private UserMapper userMapper;
@@ -21,22 +21,9 @@ public class UserService implements IService<User> {
         return userMapper.findByUNamePwd(username, password);
     }
 
-    @Override
     public boolean add(User user) {
         userMapper.insert(user);
         return true;
-    }
-
-    @Override
-    public boolean update(User user) {
-        // Not used in this application
-        throw new NotImplementedException();
-    }
-
-    @Override
-    public boolean delete(User user) {
-        // Not used in this application
-        throw new NotImplementedException();
     }
 
 }

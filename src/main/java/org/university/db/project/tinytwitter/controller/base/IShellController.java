@@ -1,10 +1,9 @@
 package org.university.db.project.tinytwitter.controller.base;
 
-import org.university.db.project.tinytwitter.controller.ControllerResult;
-import org.university.db.project.tinytwitter.service.TwitterContext;
+import org.university.db.project.tinytwitter.controller.ResponseStatus;
 
 public interface IShellController {
-    ControllerResult run(TwitterContext context);
+    ResponseStatus run(TwitterContext context);
 
-    IShellController DEFAULT_NORMAL = context -> ControllerResult.NORMAL;
+    IShellController DEFAULT_NORMAL = context -> ResponseStatus.NORMAL;
 }

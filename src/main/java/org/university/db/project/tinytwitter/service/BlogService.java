@@ -2,15 +2,19 @@ package org.university.db.project.tinytwitter.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
 import org.university.db.project.tinytwitter.dao.BlogMapper;
 import org.university.db.project.tinytwitter.entity.Blog;
 import org.university.db.project.tinytwitter.entity.User;
+import org.university.db.project.tinytwitter.entity.search.BlogSearchRequest;
 
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
 @Service
-public class BlogService implements IService<Blog> {
+public class BlogService {
 
     private final BlogMapper blogMapper;
 
@@ -19,20 +23,21 @@ public class BlogService implements IService<Blog> {
         this.blogMapper = blogMapper;
     }
 
-    @Override
     public boolean add(Blog blog) {
         blogMapper.insert(blog);
         return true;
     }
 
-    @Override
     public boolean update(Blog blog) {
         return blogMapper.updateByPrimaryKey(blog) == 1;
     }
 
-    @Override
-    public boolean delete(Blog blog) {
-        return blogMapper.deleteByPrimaryKey(blog.getBlogId()) == 1;
+    public boolean deleteBlogs(List<Integer> blogIds) {
+        if (CollectionUtils.isEmpty(blogIds)) {
+            return true;
+        }
+        blogMapper.deleteByBlogIds(blogIds);
+        return true;
     }
 
     public boolean isLike(User user, Blog blog) {
@@ -60,19 +65,30 @@ public class BlogService implements IService<Blog> {
         return true;
     }
 
-    public List<Blog> getAllBlog() {
-        return blogMapper.selectAll();
-    }
-
-    public List<Blog> searchBlog(User user, TwitterContext.BlogSearchContext searchContext) {
-        return blogMapper.selectByFilter(wrapLike(searchContext.getUser()), wrapLike(searchContext.getBlogTitle()),
-                wrapLike(searchContext.getBlogContent()), searchContext.getIsLike(), searchContext.getIsCollect(),
-                user == null ? null : user.getUserId());
-//        return blogMapper.selectAll();
+    public List<Blog> searchBlog(BlogSearchRequest request) {
+        Integer page = request.getPage();
+        if (page == null || page < 0) {
+            page = 0;
+        }
+        Integer pageSize = request.getPageSize();
+        if (pageSize == null || pageSize < 10) {
+            pageSize = 10;
+        } else if (pageSize > 50) {
+            pageSize = 50;
+        }
+        return blogMapper.selectByFilter(
+                wrapLike(request.getUser()),
+                wrapLike(request.getBlogTitle()),
+                wrapLike(request.getBlogContent()),
+                request.getIsLike(),
+                request.getIsCollect(),
+                request.getUserId(),
+                page,
+                pageSize);
     }
 
     private String wrapLike(String str) {
-        if (str == null) {
+        if (str == null || str.trim().length() == 0) {
             return null;
         }
         return "%" + str + "%";
