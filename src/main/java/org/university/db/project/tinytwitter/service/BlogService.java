@@ -66,6 +66,9 @@ public class BlogService {
     }
 
     public List<Blog> searchBlog(BlogSearchRequest request) {
+        if (request == null) {
+            request = new BlogSearchRequest();
+        }
         Integer page = request.getPage();
         if (page == null || page < 0) {
             page = 0;

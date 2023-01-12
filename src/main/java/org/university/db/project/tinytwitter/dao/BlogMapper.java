@@ -83,10 +83,10 @@ public interface BlogMapper {
             "            in (select blog_id from collection where user_id = #{userId, jdbcType=INTEGER})" +
             "        </if>" +
             "    </where> " +
-            "    <if test='offset != null'>" +
-            "        offset #{offset} limit #{limit}" +
-            "    </if>" +
             "    order by update_date desc, likes desc, collects desc, title asc" +
+            "    <if test='offset != null'>" +
+            "        limit #{limit} offset #{offset}" +
+            "    </if>" +
             "</script>"})
     @ResultMap(value = {"blogMap"})
     List<Blog> selectByFilter(String uname, String title, String content, Boolean isLike, Boolean isCollect, Integer userId, Integer offset, Integer limit);

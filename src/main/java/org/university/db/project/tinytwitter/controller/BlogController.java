@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.university.db.project.tinytwitter.entity.Blog;
 import org.university.db.project.tinytwitter.entity.search.BlogSearchRequest;
 import org.university.db.project.tinytwitter.entity.search.BlogSearchResponse;
+import org.university.db.project.tinytwitter.entity.web.Response;
 import org.university.db.project.tinytwitter.service.BlogService;
 
 import java.util.List;
@@ -23,17 +24,19 @@ public class BlogController {
         this.blogService = blogService;
     }
 
-    @RequestMapping(value = "/search", method = RequestMethod.GET)
+    @RequestMapping(value = "/search")
     public @ResponseBody
-    BlogSearchResponse getBlogs(@RequestBody BlogSearchRequest request) {
-        BlogSearchResponse response = new BlogSearchResponse();
+    Response<List<Blog>> getBlogs(@RequestBody(required = false) BlogSearchRequest request) {
+//        BlogSearchResponse response = new BlogSearchResponse();
         try {
-            response.setResult(blogService.searchBlog(request));
-            response.setStatus(0);
+            return Response.ok(blogService.searchBlog(request));
+//            response.setResult(blogService.searchBlog(request));
+//            response.setStatus(0);
         } catch (Exception e) {
-            response.setStatus(1);
+            return Response.error(e.toString());
+//            response.setStatus(1);
         }
-        return response;
+//        return response;
     }
 
     @RequestMapping(value = "/add")
