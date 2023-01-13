@@ -8,8 +8,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.university.db.project.tinytwitter.entity.Comment;
 import org.university.db.project.tinytwitter.entity.search.CommentSearchRequest;
-import org.university.db.project.tinytwitter.entity.search.CommentSearchResponse;
+import org.university.db.project.tinytwitter.entity.web.Response;
 import org.university.db.project.tinytwitter.service.CommentService;
+
+import java.util.Date;
+import java.util.List;
 
 @Controller
 @RequestMapping("/comment")
@@ -25,36 +28,50 @@ public class CommentController {
 
     @RequestMapping("/search")
     public @ResponseBody
-    CommentSearchResponse searchComment(@RequestBody CommentSearchRequest request) {
-        CommentSearchResponse response = new CommentSearchResponse();
+    Response<List<Comment>> searchComment(@RequestBody CommentSearchRequest request) {
         if (request.getBlogId() == null) {
-            response.setStatus(2);
-            response.setMessage("Missing Blog Id");
-            return response;
+            return Response.error("Missing Blog Id");
         }
         try {
-            response.setResults(commentService.searchComments(request));
-            response.setStatus(0);
+            return Response.ok(commentService.searchComments(request));
         } catch (Exception e) {
-            response.setStatus(1);
-            response.setMessage("Query Comments Failed, " + e.getMessage());
+            return Response.error("Query Comments Failed, " + e);
         }
-
-        return response;
     }
 
     @RequestMapping("/add")
-    public void addComment(@RequestBody Comment comment) {
-        commentService.add(comment);
+    public @ResponseBody
+    Response<Void> addComment(@RequestBody Comment comment) {
+        comment.setCreateDate(new Date());
+        comment.setUpdateDate(comment.getCreateDate());
+        try {
+            commentService.add(comment);
+            return Response.ok(null);
+        } catch (Exception e) {
+            return Response.error(e.toString());
+        }
     }
 
     @RequestMapping("/update")
-    public void updateComment(@RequestBody Comment comment) {
-        commentService.update(comment);
+    public @ResponseBody
+    Response<Void> updateComment(@RequestBody Comment comment) {
+        comment.setUpdateDate(new Date());
+        try {
+            commentService.update(comment);
+            return Response.ok(null);
+        } catch (Exception e) {
+            return Response.error(e.toString());
+        }
     }
 
     @RequestMapping("/delete/{id}")
-    public void deleteComment(@PathVariable("id") Integer id) {
-        commentService.deleteById(id);
+    public @ResponseBody
+    Response<Void> deleteComment(@PathVariable("id") Integer id) {
+        try {
+            commentService.deleteById(id);
+            return Response.ok(null);
+        } catch (Exception e) {
+            return Response.error(e.toString());
+        }
     }
 }

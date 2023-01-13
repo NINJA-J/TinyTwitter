@@ -3,14 +3,13 @@ package org.university.db.project.tinytwitter.controller;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.university.db.project.tinytwitter.entity.Blog;
 import org.university.db.project.tinytwitter.entity.search.BlogSearchRequest;
-import org.university.db.project.tinytwitter.entity.search.BlogSearchResponse;
 import org.university.db.project.tinytwitter.entity.web.Response;
 import org.university.db.project.tinytwitter.service.BlogService;
 
+import java.util.Date;
 import java.util.List;
 
 @Controller
@@ -27,30 +26,44 @@ public class BlogController {
     @RequestMapping(value = "/search")
     public @ResponseBody
     Response<List<Blog>> getBlogs(@RequestBody(required = false) BlogSearchRequest request) {
-//        BlogSearchResponse response = new BlogSearchResponse();
         try {
             return Response.ok(blogService.searchBlog(request));
-//            response.setResult(blogService.searchBlog(request));
-//            response.setStatus(0);
         } catch (Exception e) {
             return Response.error(e.toString());
-//            response.setStatus(1);
         }
-//        return response;
     }
 
     @RequestMapping(value = "/add")
-    public void addBlogs(@RequestBody Blog blog) {
-        blogService.add(blog);
+    public @ResponseBody
+    Response<Void> addBlogs(@RequestBody Blog blog) {
+        try {
+            blogService.add(blog);
+            return Response.ok(null);
+        } catch (Exception e) {
+            return Response.error(e.toString());
+        }
     }
 
     @RequestMapping(value = "/update")
-    public void updateBlogs(@RequestBody Blog blog) {
-        blogService.update(blog);
+    public @ResponseBody
+    Response<Void> updateBlogs(@RequestBody Blog blog) {
+        try {
+            blog.setUpdateDate(new Date());
+            blogService.update(blog);
+            return Response.ok(null);
+        } catch (Exception e) {
+            return Response.error(e.toString());
+        }
     }
 
     @RequestMapping(value = "/delete")
-    public void deleteBlogs(@RequestBody List<Integer> blogs) {
-        blogService.deleteBlogs(blogs);
+    public @ResponseBody
+    Response<Void> deleteBlogs(@RequestBody List<Integer> blogs) {
+        try {
+            blogService.deleteBlogs(blogs);
+            return Response.ok(null);
+        } catch (Exception e) {
+            return Response.error(e.toString());
+        }
     }
 }

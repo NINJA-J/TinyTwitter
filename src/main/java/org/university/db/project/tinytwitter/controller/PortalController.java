@@ -6,11 +6,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
 import org.university.db.project.tinytwitter.entity.User;
+import org.university.db.project.tinytwitter.entity.web.Response;
 import org.university.db.project.tinytwitter.service.UserService;
 
 @Controller
-@RequestMapping("/auth")
+@RequestMapping("/")
 public class PortalController {
 
     private final UserService userService;
@@ -20,39 +22,35 @@ public class PortalController {
         this.userService = userService;
     }
 
-    @RequestMapping("/login")
+    @RequestMapping("/")
+    public ModelAndView index() {
+        return new ModelAndView("index.html");
+    }
+
+    @RequestMapping("/auth/login")
     public @ResponseBody
-    LoginResponse login(@RequestBody LoginRequest request) {
-        LoginResponse response = new LoginResponse();
+    Response<User> login(@RequestBody LoginRequest request) {
         try {
             User user = userService.login(request.getUsername(), request.getPassword());
             if (user == null) {
-                response.setStatus(ResponseStatus.ERROR.code);
-                response.setMessage("Invalid username or Password");
+                return Response.error("Invalid Username or Password");
             } else {
-                response.setStatus(ResponseStatus.SUCCESS.code);
-                response.setUser(user);
+                return Response.ok(user);
             }
         } catch (Exception e) {
-            response.setStatus(ResponseStatus.ERROR.code);
-            response.setMessage("Internal Server Error, try again");
+            return Response.error("Internal Server Error, " + e);
         }
-        return response;
     }
 
-    @RequestMapping("/register")
+    @RequestMapping("/auth/register")
     public @ResponseBody
-    LoginResponse register(@RequestBody User user) {
-        LoginResponse response = new LoginResponse();
+    Response<User> register(@RequestBody User user) {
         try {
             userService.add(user);
-            response.setStatus(ResponseStatus.SUCCESS.code);
-            response.setUser(user);
+            return Response.ok(user);
         } catch (Exception e) {
-            response.setStatus(ResponseStatus.ERROR.code);
-            response.setMessage("Internal Server Error, try again");
+            return Response.error("Internal Server Error, " + e);
         }
-        return response;
     }
 
     @Data
@@ -60,14 +58,5 @@ public class PortalController {
         private String username;
 
         private String password;
-    }
-
-    @Data
-    private static class LoginResponse {
-        private int status;
-
-        private String message;
-
-        private User user;
     }
 }
