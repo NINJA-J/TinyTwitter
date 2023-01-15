@@ -1,11 +1,10 @@
 package org.university.db.project.tinytwitter.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 import org.university.db.project.tinytwitter.entity.Comment;
 import org.university.db.project.tinytwitter.entity.search.CommentSearchRequest;
 import org.university.db.project.tinytwitter.entity.web.Response;
@@ -14,7 +13,7 @@ import org.university.db.project.tinytwitter.service.CommentService;
 import java.util.Date;
 import java.util.List;
 
-@Controller
+@RestController
 @RequestMapping("/comment")
 public class CommentController {
 
@@ -27,8 +26,7 @@ public class CommentController {
     }
 
     @RequestMapping("/search")
-    public @ResponseBody
-    Response<List<Comment>> searchComment(@RequestBody CommentSearchRequest request) {
+    public Response<List<Comment>> searchComment(@RequestBody CommentSearchRequest request) {
         if (request.getBlogId() == null) {
             return Response.error("Missing Blog Id");
         }
@@ -40,8 +38,7 @@ public class CommentController {
     }
 
     @RequestMapping("/add")
-    public @ResponseBody
-    Response<Void> addComment(@RequestBody Comment comment) {
+    public Response<Void> addComment(@RequestBody Comment comment) {
         comment.setCreateDate(new Date());
         comment.setUpdateDate(comment.getCreateDate());
         try {
@@ -53,8 +50,7 @@ public class CommentController {
     }
 
     @RequestMapping("/update")
-    public @ResponseBody
-    Response<Void> updateComment(@RequestBody Comment comment) {
+    public Response<Void> updateComment(@RequestBody Comment comment) {
         comment.setUpdateDate(new Date());
         try {
             commentService.update(comment);
@@ -65,8 +61,7 @@ public class CommentController {
     }
 
     @RequestMapping("/delete/{id}")
-    public @ResponseBody
-    Response<Void> deleteComment(@PathVariable("id") Integer id) {
+    public Response<Void> deleteComment(@PathVariable("id") Integer id) {
         try {
             commentService.deleteById(id);
             return Response.ok(null);

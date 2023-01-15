@@ -2,16 +2,15 @@ package org.university.db.project.tinytwitter.controller;
 
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 import org.university.db.project.tinytwitter.entity.User;
 import org.university.db.project.tinytwitter.entity.web.Response;
 import org.university.db.project.tinytwitter.service.UserService;
 
-@Controller
+@RestController
 @RequestMapping("/")
 public class PortalController {
 
@@ -28,8 +27,7 @@ public class PortalController {
     }
 
     @RequestMapping("/auth/login")
-    public @ResponseBody
-    Response<User> login(@RequestBody LoginRequest request) {
+    public Response<User> login(@RequestBody LoginRequest request) {
         try {
             User user = userService.login(request.getUsername(), request.getPassword());
             if (user == null) {
@@ -43,8 +41,7 @@ public class PortalController {
     }
 
     @RequestMapping("/auth/register")
-    public @ResponseBody
-    Response<User> register(@RequestBody User user) {
+    public Response<User> register(@RequestBody User user) {
         try {
             userService.add(user);
             return Response.ok(user);

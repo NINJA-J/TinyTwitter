@@ -72,6 +72,9 @@ public interface BlogMapper {
             "        <if test='content != null and content != \"%%\"'>" +
             "            and blog.content like #{content}" +
             "        </if>" +
+            "        <if test='userId != null'>" +
+            "            and user_id = #{userId}" +
+            "        </if>" +
             "        <if test='isLike != null'>" +
             "            and blog.blog_id " +
             "            <if test='isLike=false'> not </if>" +
